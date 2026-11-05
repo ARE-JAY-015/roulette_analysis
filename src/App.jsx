@@ -1,10 +1,11 @@
 
-
+import StatisticalIntegrity from "./StatisticalIntegrity.jsx";
+import DataQualityMonitor from "./DataQualityMonitor.jsx";
 import SessionInsights from "./SessionInsights.jsx";
 import AnalyticsCharts from "./AnalyticsCharts.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./App.css";
-import RouletteWheel from "./Roulette wheel.jsx";
+import RouletteWheel from "./Roulettewheel.jsx";
 
 const RED = new Set([
   1, 3, 5, 7, 9, 12, 14, 16, 18,
@@ -115,15 +116,9 @@ const [auditLog, setAuditLog] = useState(() => {
   }
 });
 
-useEffect(() => {
-  localStorage.setItem(
-    "rouletteiq-audit-log",
-    JSON.stringify(auditLog)
-  );
-}, [auditLog]);
 
 
-const [editingResultId, setEditingResultId] = useState(null);
+
 
 useEffect(() => {
   localStorage.setItem(
@@ -149,7 +144,7 @@ useEffect(() => {
 }, [activeSessionId]);
 
   const [selected, setSelected] = useState(null);
-  const [editingResultKey, setEditingResultKey] = useState(null);
+ const [editingId, setEditingId] = useState(null);
 const [correctionValue, setCorrectionValue] = useState("");
 const [correctionReason, setCorrectionReason] = useState("");
 
@@ -193,6 +188,9 @@ const historyNumbers = filteredHistory
     setSelected(history.length ? getNumber(history[0]) : null);
   }, [history]);
 
+
+  const [editingResultKey, setEditingResultKey] = useState(null);
+
  
 const addResult = (number) => {
   if (!Number.isInteger(number) || number < 0 || number > 36) {
@@ -207,28 +205,29 @@ const addResult = (number) => {
     source: "manual",
   };
 
-  setHistory((old) => [result, ...old].slice(0, 200));
+  setHistory((old) => [result, ...old].slice(0, 2000));
   setSelected(number);
 };
 
 
-   const startSession = () => {
-  const name = window.prompt(
-    "Enter a name for this session:",
-    `Session ${sessions.length + 1}`
-  );
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+const [newSessionName, setNewSessionName] = useState("");
 
-  if (!name || !name.trim()) return;
+const handleCreateSession = (e) => {
+  e.preventDefault();
+  if (!newSessionName.trim()) return;
 
   const session = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    name: name.trim(),
+    name: newSessionName.trim(),
     startedAt: Date.now(),
   };
 
   setSessions((old) => [...old, session]);
   setActiveSessionId(session.id);
   setSelectedSessionId(session.id);
+  setNewSessionName("");
+  setIsSessionModalOpen(false);
 };
 
 const endSession = () => {
@@ -261,114 +260,65 @@ const addColorResult = (color) => {
     setHistory([]);
   };
   
-  const startCorrection = (item, index) => {
-  setEditingResultKey(`${item.timestamp}-${index}`);
-
-  setCorrectionValue(
-    item.colorOnly ? item.colorOnly : String(item.number)
-  );
-
+ const startCorrection = (item) => {
+  setEditingId(item.id);
+  setCorrectionValue(item.colorOnly ? item.colorOnly : String(item.number));
   setCorrectionReason("");
 };
-  
 
 const cancelCorrection = () => {
-  setEditingResultId(null);
+  setEditingId(null);
   setCorrectionValue("");
   setCorrectionReason("");
 };
 
 
-
-const saveCorrection = (item, index) => {
+const saveCorrection = (item) => {
   const reason = correctionReason.trim();
-
   if (!reason) {
     alert("Please enter a reason for the correction.");
     return;
   }
 
-  const recordIndex = history.indexOf(item);
-
-  if (recordIndex === -1) {
-    alert("Could not find this result. Please try again.");
-    return;
-  }
-
-  const originalNumber = getNumber(item);
-  const originalColor = getResultColor(item);
-
   let updatedFields;
-  let correctedNumber;
-  let correctedColor;
+  let correctedNumber = null;
+  let correctedColor = null;
 
   if (item.colorOnly) {
     const color = correctionValue.toLowerCase();
-
-    if (!["red", "black", "green"].includes(color)) {
-      alert("Please select a valid color.");
-      return;
-    }
-
+    if (!["red", "black", "green"].includes(color)) return;
     updatedFields = { colorOnly: color };
-    correctedNumber = null;
     correctedColor = color;
   } else {
-    const number = Number(correctionValue);
-
-    if (
-      correctionValue.trim() === "" ||
-      !Number.isInteger(number) ||
-      number < 0 ||
-      number > 36
-    ) {
-      alert("Enter a roulette number from 0 to 36.");
-      return;
-    }
-
-    updatedFields = { number };
-    correctedNumber = number;
-    correctedColor = getColor(number);
+    const num = Number(correctionValue);
+    if (!Number.isInteger(num) || num < 0 || num > 36) return;
+    updatedFields = { number: num };
+    correctedNumber = num;
+    correctedColor = getColor(num);
   }
 
-  if (
-    originalNumber === correctedNumber &&
-    originalColor === correctedColor
-  ) {
-    alert("The corrected result is unchanged.");
-    return;
-  }
-
-  const correctedAt = Date.now();
-
-  // Save the original and corrected values in the audit log.
-  setAuditLog((old) => [
+  // Record into audit log
+  setAuditLog((prev) => [
     {
-      id: `${correctedAt}-${Math.random().toString(36).slice(2, 8)}`,
-      originalNumber,
-      originalColor,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      originalNumber: getNumber(item),
+      originalColor: getResultColor(item),
       correctedNumber,
       correctedColor,
       reason,
       originalTimestamp: item.timestamp,
-      correctedAt,
+      correctedAt: Date.now(),
       sessionId: item.sessionId || null,
     },
-    ...old,
+    ...prev,
   ]);
 
-  // Update the existing spin history.
-  setHistory((old) =>
-    old.map((record, i) =>
-      i === recordIndex
-        ? { ...record, ...updatedFields }
-        : record
-    )
+  // Update item in history by unique ID
+  setHistory((prev) =>
+    prev.map((rec) => (rec.id === item.id ? { ...rec, ...updatedFields } : rec))
   );
 
-  setEditingResultKey(null);
-  setCorrectionValue("");
-  setCorrectionReason("");
+  cancelCorrection();
 };
 
 
@@ -451,14 +401,7 @@ const exportAuditLog = () => {
    const rows = filteredHistory.map((item, index) => {
   const number = getNumber(item);
   const color = getResultColor(item);
-  const parity =
-    number === null
-      ? "Unknown"
-      : number === 0
-        ? "Neither"
-        : number % 2 === 0
-          ? "Even"
-          : "Odd";
+  
 
   return [
     filteredHistory.length - index,
@@ -496,10 +439,7 @@ const exportAuditLog = () => {
     URL.revokeObjectURL(url);
   };
 
- const counts = Array.from({ length: 37 }, (_, number) => ({
-  number,
-  count: historyNumbers.filter((n) => n === number).length,
-}));
+
  const redCount = filteredHistory.filter(
   (item) => getResultColor(item) === "red"
 ).length;
@@ -525,15 +465,26 @@ const zeroCount = filteredHistory.filter(
     (n) => n >= 19 && n <= 36
   ).length;
 
-const percentage = (count) =>
-  filteredHistory.length
-    ? ((count / filteredHistory.length) * 100).toFixed(1)
-    : "0.0";
 
+  const counts = useMemo(() => {
+  return Array.from({ length: 37 }, (_, number) => ({
+    number,
+    count: historyNumbers.filter((n) => n === number).length,
+  }));
+}, [historyNumbers]);
+
+// Separate total records from numbered records
+const numberedSpins = filteredHistory.filter((item) => getNumber(item) !== null);
+const totalRecords = filteredHistory.length;
+const totalNumbered = numberedSpins.length;
+
+// Colors use all records (including color-only entries)
+const percentage = (count) =>
+  totalRecords ? ((count / totalRecords) * 100).toFixed(1) : "0.0";
+
+// Parity and Range only divide by numbered spins (prevents deflated stats)
 const numberPercentage = (count) =>
-  historyNumbers.length
-    ? ((count / historyNumbers.length) * 100).toFixed(1)
-    : "0.0";
+  totalNumbered ? ((count / totalNumbered) * 100).toFixed(1) : "0.0";
    
 const reportSession =
   sessions.find((session) => session.id === selectedSessionId) || null;
@@ -589,6 +540,34 @@ const sessionComparison = sessions.map((session) => {
   const green = sessionResults.filter(
     (item) => getResultColor(item) === "green"
   ).length;
+
+  // Simulates a batch of spins to test Chi-Square anomaly detection
+const simulateBatch = (count = 500, biased = false) => {
+  const newSpins = [];
+  const now = Date.now();
+
+  for (let i = 0; i < count; i++) {
+    let outcome;
+    if (biased && Math.random() < 0.15) {
+      // 15% biased weighting toward the '0' pocket and neighboring pockets 26 and 32
+      const biasPockets = [0, 26, 32];
+      outcome = biasPockets[Math.floor(Math.random() * biasPockets.length)];
+    } else {
+      // True fair uniform distribution (0 to 36)
+      outcome = Math.floor(Math.random() * 37);
+    }
+
+    newSpins.push({
+      id: crypto.randomUUID(),
+      number: outcome,
+      timestamp: now - (count - i) * 1000,
+      sessionId: activeSessionId || null,
+      source: biased ? "simulated-bias" : "simulated-fair",
+    });
+  }
+
+  setHistory((old) => [...newSpins.reverse(), ...old].slice(0, 2000));
+};
 
   return {
     id: session.id,
@@ -667,6 +646,39 @@ const exportSessionReport = () => {
   
   const highest = Math.max(0, ...counts.map((item) => item.count));
 
+  // Batch simulation for testing Chi-Square and charts
+  const simulateBatch = (count = 500, biased = false) => {
+    const newSpins = [];
+    const now = Date.now();
+
+    for (let i = 0; i < count; i++) {
+      let outcome;
+      if (biased && Math.random() < 0.15) {
+        // 15% biased weighting toward pockets 0, 26, and 32
+        const biasPockets = [0, 26, 32];
+        outcome = biasPockets[Math.floor(Math.random() * biasPockets.length)];
+      } else {
+        // Fair random pocket (0 to 36)
+        outcome = Math.floor(Math.random() * 37);
+      }
+
+      const id =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}-${i}`;
+
+      newSpins.push({
+        id,
+        number: outcome,
+        timestamp: now - (count - i) * 1000,
+        sessionId: activeSessionId || null,
+        source: biased ? "simulated-bias" : "simulated-fair",
+      });
+    }
+
+    setHistory((old) => [...newSpins.reverse(), ...old].slice(0, 2000));
+  };
+
   const mostFrequent = highest
     ? counts.filter((item) => item.count === highest)
     : [];
@@ -705,7 +717,7 @@ const exportSessionReport = () => {
         <article className="stat-card">
           <p>Total spins recorded</p>
           <strong>{history.length}</strong>
-          <span>Maximum 200 recent results</span>
+          <span>Maximum 2,000 recent results</span>
         </article>
 
         <article className="stat-card">
@@ -741,16 +753,25 @@ const exportSessionReport = () => {
 
 <div className="session-actions">
   <button
-    type="button"
-    className="secondary-button"
-    onClick={() => {
-      console.log("Start Session clicked");
-      startSession();
-    }}
-    disabled={Boolean(activeSessionId)}
-  >
-    Start Session
-  </button>
+  type="button"
+  className="secondary-button"
+  onClick={() => setIsSessionModalOpen(true)}
+  disabled={Boolean(activeSessionId)}
+>
+  Start Session
+</button>
+
+
+<button
+  type="button"
+  className="secondary-button"
+  onClick={() => simulateBatch(500, false)}
+  style={{ borderColor: "#10b981", color: "#10b981" }}
+>
+  + 500 Fair Spins
+</button>
+
+
 
   <button
     type="button"
@@ -763,6 +784,17 @@ const exportSessionReport = () => {
   >
     End Session
   </button>
+
+  <button
+  type="button"
+  className="secondary-button"
+  onClick={() => simulateBatch(500, true)}
+  style={{ borderColor: "#fa6670", color: "#fa6670" }}
+>
+  + 500 Biased Spins (Test Anomaly)
+</button>
+
+
 </div>
 
 
@@ -907,62 +939,95 @@ const exportSessionReport = () => {
   const number = getNumber(item);
   const color = getResultColor(item);
   
-{editingResultId === item.id && (
-  <div className="correction-form">
-    <label>
-      {item.colorOnly ? "Corrected color" : "Corrected number"}
-      {item.colorOnly ? (
-        <select
-          value={correctionValue}
-          onChange={(event) =>
-            setCorrectionValue(event.target.value)
-          }
-        >
-          <option value="red">Red</option>
-          <option value="black">Black</option>
-          <option value="green">Green</option>
-        </select>
-      ) : (
-        <input
-          type="number"
-          min="0"
-          max="36"
-          value={correctionValue}
-          onChange={(event) =>
-            setCorrectionValue(event.target.value)
-          }
-        />
-      )}
-    </label>
+<div className="history-list">
+              {filteredHistory.slice(0, 30).map((item, i) => {
+                const number = getNumber(item);
+                const color = getResultColor(item);
 
-    <label>
-      Reason for correction (required)
-      <textarea
-        value={correctionReason}
-        onChange={(event) =>
-          setCorrectionReason(event.target.value)
-        }
-        placeholder="Example: entered the wrong number"
-        required
-      />
-    </label>
+                return (
+                  <div
+                    className="history-item"
+                    key={`${item.timestamp}-${i}`}
+                  >
+                    <span className={`result-ball ${color}`}>
+                      {number === null ? color.toUpperCase() : number}
+                    </span>
 
-    <div className="button-row">
-      <button
-        className="secondary-button"
-        onClick={() => saveCorrection(item)}
-      >
-        Save correction
-      </button>
-      <button
-        className="secondary-button"
-        onClick={cancelCorrection}
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)}
+                    <span>Spin {filteredHistory.length - i}</span>
+                    <span className="history-color">{color}</span>
+
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={() => startCorrection(item, i)}
+                    >
+                      Correct
+                    </button>
+
+                    {editingResultKey === `${item.timestamp}-${i}` && (
+                      <div className="correction-form">
+                        <h4>Correct this result</h4>
+
+                        <label>
+                          {item.colorOnly ? "Correct color" : "Correct number"}
+                          {item.colorOnly ? (
+                            <select
+                              value={correctionValue}
+                              onChange={(event) =>
+                                setCorrectionValue(event.target.value)
+                              }
+                            >
+                              <option value="red">Red</option>
+                              <option value="black">Black</option>
+                              <option value="green">Green</option>
+                            </select>
+                          ) : (
+                            <input
+                              type="number"
+                              min="0"
+                              max="36"
+                              value={correctionValue}
+                              onChange={(event) =>
+                                setCorrectionValue(event.target.value)
+                              }
+                            />
+                          )}
+                        </label>
+
+                        <label>
+                          Reason for correction
+                          <textarea
+                            value={correctionReason}
+                            onChange={(event) =>
+                              setCorrectionReason(event.target.value)
+                            }
+                            placeholder="e.g. Incorrect result entered"
+                          />
+                        </label>
+
+                        <div className="button-row">
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => saveCorrection(item, i)}
+                          >
+                            Save Correction
+                          </button>
+
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => setEditingResultKey(null)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
 
   return (
@@ -1306,6 +1371,15 @@ const exportSessionReport = () => {
   sessions={sessions}
 />
 
+<DataQualityMonitor
+  history={history}
+  sessions={sessions}
+/>
+
+<StatisticalIntegrity
+  history={history}
+/>
+
 
 
 <SessionInsights
@@ -1383,6 +1457,58 @@ const exportSessionReport = () => {
       <footer>
         ROULETTEIQ · STATISTICAL ANALYSIS ONLY · NO BETTING OR GUARANTEED PREDICTIONS
       </footer>
+
+      {isSessionModalOpen && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      backgroundColor: "rgba(0,0,0,0.75)",
+      display: "grid",
+      placeItems: "center",
+      zIndex: 1000,
+    }}
+  >
+    <form
+      onSubmit={handleCreateSession}
+      className="panel"
+      style={{ width: "90%", maxWidth: "400px", padding: "24px" }}
+    >
+      <h3 style={{ margin: "0 0 12px 0" }}>Create New Session</h3>
+      <p className="helper-text" style={{ marginBottom: "16px" }}>
+        Assign incoming spins to an operational table shift.
+      </p>
+      <input
+        type="text"
+        autoFocus
+        placeholder="e.g. Table 4 - Evening Shift"
+        value={newSessionName}
+        onChange={(e) => setNewSessionName(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "16px",
+          background: "#151b19",
+          border: "1px solid #303936",
+          color: "white",
+          borderRadius: "8px",
+        }}
+      />
+      <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={() => setIsSessionModalOpen(false)}
+        >
+          Cancel
+        </button>
+        <button type="submit" className="secondary-button" style={{ borderColor: "#d5b66a", color: "#d5b66a" }}>
+          Create Session
+        </button>
+      </div>
+    </form>
+  </div>
+)}
     </main>
   );
 }

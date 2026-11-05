@@ -1,0 +1,250 @@
+.statistical-panel {
+  margin-top: 24px;
+}
+
+.statistical-sample-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 20px;
+  color: #d8b45a;
+  background: rgba(216, 180, 90, 0.1);
+  border: 1px solid rgba(216, 180, 90, 0.25);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.statistical-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.statistical-summary-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.statistical-summary-card span {
+  color: #a5b1ac;
+  font-size: 12px;
+}
+
+.statistical-summary-card strong {
+  color: #f4f5f4;
+  font-size: 27px;
+}
+
+.statistical-table-wrapper {
+  margin-top: 28px;
+  overflow-x: auto;
+}
+
+.statistical-table-wrapper h4,
+.statistical-test-heading h4 {
+  color: #f4f5f4;
+  font-size: 16px;
+  margin: 0 0 16px;
+}
+
+.statistical-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 550px;
+}
+
+.statistical-table th,
+.statistical-table td {
+  padding: 15px 12px;
+  text-align: left;
+  border-bottom: 1px solid #303936;
+  font-size: 13px;
+}
+
+.statistical-table th {
+  color: #a5b1ac;
+  font-weight: 600;
+}
+
+.statistical-table td {
+  color: #f4f5f4;
+}
+
+.statistical-color-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+}
+
+.statistical-color-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.statistical-color-dot.red {
+  background: #e65363;
+}
+
+.statistical-color-dot.black {
+  background: #64748b;
+}
+
+.statistical-color-dot.green {
+  background: #10b981;
+}
+
+.statistical-test-card {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid #303936;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.statistical-test-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.statistical-test-heading h4 {
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.statistical-test-status {
+  display: inline-flex;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+
+.test-insufficient {
+  color: #e6b85c;
+  background: rgba(230, 184, 92, 0.12);
+  border: 1px solid rgba(230, 184, 92, 0.3);
+}
+
+.test-significant {
+  color: #e65363;
+  background: rgba(230, 83, 99, 0.12);
+  border: 1px solid rgba(230, 83, 99, 0.3);
+}
+
+.test-not-significant {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.statistical-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.statistical-metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statistical-metrics span {
+  color: #a5b1ac;
+  font-size: 11px;
+}
+
+.statistical-metrics strong {
+  color: #f4f5f4;
+  font-size: 21px;
+}
+
+.statistical-explanation {
+  margin: 22px 0 0;
+  padding: 14px;
+  border-radius: 9px;
+  background: rgba(216, 180, 90, 0.07);
+  color: #d8c99f;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.statistical-warning {
+  margin-top: 16px;
+  color: #e6b85c;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .statistical-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statistical-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statistical-test-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .statistical-summary-card {
+    padding: 13px;
+  }
+
+  .statistical-summary-card strong {
+    font-size: 22px;
+  }
+}
+
+
+.statistical-export-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 18px 0 8px;
+}
+
+.statistical-export-button {
+  padding: 11px 17px;
+  border-radius: 8px;
+  border: 1px solid rgba(216, 180, 90, 0.45);
+  background: rgba(216, 180, 90, 0.1);
+  color: #d8b45a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.statistical-export-button:hover {
+  background: rgba(216, 180, 90, 0.2);
+  transform: translateY(-1px);
+}
+
+.statistical-export-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .statistical-export-row {
+    justify-content: stretch;
+  }
+
+  .statistical-export-button {
+    width: 100%;
+  }
+}

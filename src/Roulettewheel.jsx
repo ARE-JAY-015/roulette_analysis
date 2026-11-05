@@ -477,3 +477,6 @@ export default function RouletteWheel({ onResult }) {
     </section>
   );
 }
+
+
+

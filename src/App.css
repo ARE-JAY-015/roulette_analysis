@@ -233,8 +233,13 @@ h2 {
 .danger-button { color: #ff9298; }
 button:disabled { opacity: .35; cursor: not-allowed; }
 
-.helper-text { font-size: 11px; margin: -8px 0 20px; }
-
+/* To this: */
+.helper-text { 
+  font-size: 11px; 
+  margin: 14px 0 0; 
+  color: #929d96;
+  line-height: 1.6;
+}
 .frequency-row {
   display: flex;
   align-items: center;

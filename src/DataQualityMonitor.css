@@ -1,0 +1,128 @@
+
+.data-quality-panel {
+  margin-top: 24px;
+}
+
+.quality-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.quality-good {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.quality-warning {
+  color: #e6b85c;
+  background: rgba(230, 184, 92, 0.12);
+  border: 1px solid rgba(230, 184, 92, 0.3);
+}
+
+.quality-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.quality-summary-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.quality-summary-card span {
+  color: #a5b1ac;
+  font-size: 12px;
+}
+
+.quality-summary-card strong {
+  color: #f4f5f4;
+  font-size: 27px;
+}
+
+.quality-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 12px;
+}
+
+.quality-check-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 4px;
+  border-bottom: 1px solid #303936;
+}
+
+.quality-check-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.quality-check-info strong {
+  color: #f4f5f4;
+  font-size: 14px;
+}
+
+.quality-check-info p {
+  color: #a5b1ac;
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.quality-indicator {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  border-radius: 50%;
+}
+
+.indicator-good {
+  background: #10b981;
+  box-shadow: 0 0 9px rgba(16, 185, 129, 0.35);
+}
+
+.indicator-warning {
+  background: #e6b85c;
+  box-shadow: 0 0 9px rgba(230, 184, 92, 0.35);
+}
+
+.quality-check-value {
+  color: #f4f5f4;
+  font-size: 18px;
+}
+
+@media (max-width: 700px) {
+  .quality-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quality-status {
+    font-size: 8px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .quality-summary-card {
+    padding: 13px;
+  }
+
+  .quality-summary-card strong {
+    font-size: 22px;
+  }
+}
