@@ -1,10 +1,24 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-html, body {
+html {
   overflow-x: hidden;
-  max-width: 100vw;
-  position: relative;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #0b0f0e;
+  overflow-y: auto;                /* Explicitly re-enables vertical scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling on iOS */
+}
+
+/* Contain any wide elements inside the app wrapper instead of on body */
+.app {
+  max-width: 1440px;
+  margin: auto;
+  padding: 30px 5%;
+  overflow-x: hidden;
 }
 
 
@@ -31,6 +45,13 @@ button { font: inherit; }
   margin: auto;
   padding: 30px 5%;
 }
+
+.wheel-section,
+.wheel-section canvas {
+  touch-action: pan-y;  /* Allows your finger to scroll vertically over the wheel */
+  max-height: 480px;    /* Prevents the wheel from dominating the entire screen */
+}
+
 
 .topbar, .brand, .section-heading, .button-row {
   display: flex;
