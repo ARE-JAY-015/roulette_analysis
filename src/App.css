@@ -131,14 +131,11 @@ h1 {
   margin-bottom: 3px;
   letter-spacing: 1px;
 }
-
-h1 span { color: #d5b66a; }
-
-.brand p, .eyebrow, .small-label {
-  font-size: 10px;
-  letter-spacing: 1.6px;
-  color: #929d96;
-  margin: 0;
+h1 {
+  font: 700 20px 'Space Grotesk', sans-serif;
+  margin-bottom: 3px;
+  letter-spacing: 1px;
+  color: #f1f4f2;
 }
 
 .live-label {

@@ -1,6 +1,7 @@
 
-import { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+
+import { useEffect, useRef, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import "./RouletteWheel.css";
@@ -388,6 +389,21 @@ ball.current.position.set(
   );
 }
 
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    const aspect = size.width / size.height;
+    // Pull camera slightly back on narrow portrait screens so edges never clip
+    const distance = aspect < 1 ? 8.2 / Math.max(aspect, 0.72) : 8.2;
+    camera.position.set(0, distance, 0.01);
+    camera.updateProjectionMatrix();
+  }, [camera, size.width, size.height]);
+
+  return null;
+}
+
+
 export default function RouletteWheel({ onResult }) {
   const [spinning, setSpinning] = useState(false);
   const [lastResult, setLastResult] = useState(null);
@@ -439,21 +455,21 @@ export default function RouletteWheel({ onResult }) {
         <span className="wheel-badge">37 POCKETS</span>
       </div>
 
-      <div className="wheel-stage">
+     <div className="wheel-stage">
         <Canvas
-          camera={{ position: [0, 10, 0.01], fov: 38 }}
+          camera={{ position: [0, 8.2, 0.01], fov: 40 }}
           dpr={[1, 1.5]}
-          gl={{ antialias: true, alpha: true }}
-          shadows
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+          }}
         >
           <color attach="background" args={["#0c1510"]} />
-          <WheelModel
-            spinRef={spinRef}
-            onFinished={finish}
-          />
+          <ResponsiveCamera />
+          <WheelModel spinRef={spinRef} onFinished={finish} />
         </Canvas>
       </div>
-
       <div className="wheel-controls">
         <div className="wheel-result">
           <span className="result-label">LAST RESULT</span>

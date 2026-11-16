@@ -1,225 +1,184 @@
+/* ========================================================
+   ROULETTE WHEEL 3D EXPERIENCE & CONTROLS
+   ======================================================== */
 
 .wheel-panel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  border: 1px solid rgba(212, 174, 96, 0.22);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #12251d, #0c1712);
+  color: #f5f1e7;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-  margin: 10px 0 24px;
-  padding: 25px;
-  border: 1px solid rgba(244, 199, 106, 0.45);
-  border-radius: 18px;
-  background:
-    radial-gradient(ellipse at 50% 40%, #17332b 0%, #09110f 65%);
-  box-shadow:
-    0 20px 60px #0009,
-    inset 0 1px 0 #fff2;
 }
 
+/* Header */
 .wheel-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  position: relative;
-  z-index: 2;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .wheel-eyebrow {
-  margin: 0 0 7px;
-  color: #e5bc65;
-  font-size: 10px;
+  margin: 0 0 6px;
+  color: #d4ae60;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 2px;
 }
 
 .wheel-heading h2 {
   margin: 0;
-  font: 600 clamp(19px, 3vw, 27px) "Space Grotesk", sans-serif;
-  color: #fff0cc;
-  letter-spacing: -.5px;
+  font-size: clamp(22px, 3vw, 28px);
+  font-family: 'Space Grotesk', sans-serif;
+  color: #f1f4f2;
 }
 
 .wheel-badge {
-  padding: 8px 11px;
-  border: 1px solid #d9b76366;
-  border-radius: 30px;
-  color: #e5c579;
-  font-size: 10px;
-  letter-spacing: 1px;
+  padding: 6px 12px;
+  border: 1px solid #356b4d;
+  border-radius: 20px;
+  color: #8fe0ad;
+  background: rgba(47, 130, 78, 0.15);
+  font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
+/* 3D Canvas Stage */
+
 .wheel-stage {
-  position: relative;
-  height: clamp(360px, 52vw, 620px);
-  margin: 10px -8px 0;
+  width: 100%;
+  /* Fits cleanly above the fold on laptops (~48vh) while staying spacious on large PCs */
+  height: clamp(250px, 46vh, 430px);
+  border-radius: 14px;
   overflow: hidden;
+  position: relative;
+  background: #0c1510;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 16px;
 }
 
 .wheel-stage canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  outline: none;
+  display: block;
   touch-action: pan-y;
 }
 
-.wheel-stage canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  outline: none;
-}
 
-.wheel-vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 48%,
-    #050a08a0 100%
-  );
-}
-
+/* Controls Bar (Result + Spin Button) */
 .wheel-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  padding: 16px 0 4px;
-  border-top: 1px solid #d5b66a35;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  position: relative;
+  z-index: 10;
 }
 
 .wheel-result {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 90px;
+  gap: 4px;
 }
 
 .result-label {
-  color: #8d9b92;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 1.5px;
+  color: #a7b9ae;
+  font-weight: 600;
 }
 
 .wheel-result strong {
-  font: 600 28px "Space Grotesk", sans-serif;
-  color: #f4c76a;
+  font-size: 26px;
+  color: #d5b66a;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
-.result-number {
-  animation: result-reveal 550ms cubic-bezier(.2, .8, .2, 1) both;
-}
-
-@keyframes result-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(9px) scale(.7);
-    text-shadow: 0 0 30px #f4c76a;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    text-shadow: 0 0 14px #f4c76a40;
-  }
-}
-
+/* The Gold Spin Button */
 .wheel-spin-button {
-  position: relative;
-  overflow: hidden;
-  padding: 15px 25px;
-  border: 1px solid #ffe5a0;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #f8db91, #c58c2c 55%, #f2c96e);
-  color: #151009;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #d4ae60, #b88632);
+  color: #0b0f0e;
+  font-size: 13px;
   font-weight: 700;
-  font-size: 12px;
   letter-spacing: 1px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 5px 0 #704818, 0 8px 22px #d8a73b22;
-  transition: transform .2s, box-shadow .2s, filter .2s;
-}
-
-.wheel-spin-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -70%;
-  width: 45%;
-  height: 200%;
-  transform: rotate(25deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #ffffffa8,
-    transparent
-  );
-  transition: left .55s ease;
-}
-
-.wheel-spin-button:hover::before {
-  left: 130%;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 15px rgba(212, 174, 96, 0.25);
+  position: relative;
+  z-index: 20;
 }
 
 .wheel-spin-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 7px 0 #704818, 0 10px 30px #e6b74a44;
+  filter: brightness(1.15);
+  box-shadow: 0 6px 22px rgba(212, 174, 96, 0.4);
 }
 
 .wheel-spin-button:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #704818;
+  transform: scale(0.97);
 }
 
 .wheel-spin-button:disabled {
-  opacity: .75;
-  cursor: wait;
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  transform: none;
 }
 
 .wheel-disclaimer {
-  margin: 14px 0 0;
-  color: #829087;
-  font-size: 10px;
-  line-height: 1.6;
+  font-size: 11px;
+  color: #7e8981;
+  text-align: center;
+  margin: 12px 0 0;
 }
 
-@media (max-width: 520px) {
+/* --- MOBILE PORTRAIT (Narrow Screens) --- */
+@media (max-width: 600px) and (orientation: portrait) {
   .wheel-panel {
-    padding: 17px;
+    padding: 16px;
   }
-
   .wheel-stage {
     height: 300px;
-    margin-inline: -12px;
   }
-
   .wheel-controls {
+    flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    text-align: center;
+    gap: 12px;
   }
-
   .wheel-spin-button {
-    padding: 13px 12px;
-    font-size: 10px;
-  }
-
-  .wheel-badge {
-    font-size: 8px;
-    padding: 7px;
+    width: 100%;
+    padding: 14px;
   }
 }
-.wheel-panel {
-  background:
-    radial-gradient(
-      ellipse at 50% 43%,
-      #40301c 0%,
-      #17251e 38%,
-      #080e0c 78%
-    );
-  box-shadow:
-    0 20px 60px #0009,
-    inset 0 1px 0 #fff2,
-    0 0 40px #e8b65a12;
+
+/* --- MOBILE LANDSCAPE (Short Screen Heights) --- */
+@media (max-height: 550px) and (orientation: landscape) {
+  .wheel-panel {
+    padding: 14px;
+  }
+  .wheel-stage {
+    height: 220px;
+    margin-bottom: 12px;
+  }
+  .wheel-controls {
+    padding: 10px 16px;
+  }
+  .wheel-spin-button {
+    padding: 10px 20px;
+  }
 }
