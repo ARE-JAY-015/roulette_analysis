@@ -46,12 +46,57 @@ button { font: inherit; }
   padding: 30px 5%;
 }
 
-.wheel-section,
-.wheel-section canvas {
-  touch-action: pan-y;  /* Allows your finger to scroll vertically over the wheel */
-  max-height: 480px;    /* Prevents the wheel from dominating the entire screen */
+/* --- RESPONSIVE 3D ROULETTE WHEEL CONTAINER --- */
+.wheel-section {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  position: relative;
+  margin-bottom: 24px;
 }
 
+.wheel-section canvas {
+  touch-action: pan-y;
+}
+
+/* Constrain the 3D canvas proportionally without breaking controls */
+.wheel-section canvas {
+  width: 100% !important;
+  height: clamp(280px, 45vh, 440px) !important;
+  display: block;
+  touch-action: pan-y;
+}
+
+/* Ensure the wheel control bar & spin button sit ABOVE the canvas and receive clicks */
+.wheel-controls,
+.wheel-section button,
+.wheel-section .spin-button {
+  position: relative;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+/* --- MOBILE LANDSCAPE ADJUSTMENTS (Short Screen Height) --- */
+@media (max-height: 600px) and (orientation: landscape) {
+  .wheel-section {
+    min-height: 380px;
+  }
+  .wheel-section canvas {
+    height: 260px !important;
+  }
+}
+
+/* --- MOBILE PORTRAIT ADJUSTMENTS --- */
+@media (max-width: 600px) and (orientation: portrait) {
+  .wheel-section {
+    min-height: 460px;
+  }
+  .wheel-section canvas {
+    height: 320px !important;
+  }
+}
 
 .topbar, .brand, .section-heading, .button-row {
   display: flex;
@@ -119,8 +164,8 @@ h2 {
   font: 600 clamp(28px, 4vw, 43px) 'Space Grotesk', sans-serif;
   letter-spacing: -1.5px;
   margin-bottom: 10px;
+  color: #f1f4f2;
 }
-
 .subtitle, .helper-text, .footnote {
   color: #929d96;
   font-size: 13px;
